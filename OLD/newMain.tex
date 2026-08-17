@@ -1,0 +1,818 @@
+\documentclass[pdflatex,sn-apa]{sn-jnl}% APA Reference Style
+%%\documentclass[pdflatex,sn-chicago]{sn-jnl}% Chicago-based Humanities Reference Style
+
+%%%% Standard Packages
+%%<additional latex packages if required can be included here>
+
+\usepackage{graphicx}%
+\usepackage{multirow}%
+\usepackage{amsmath,amssymb,amsfonts}%
+\usepackage{amsthm}%
+\usepackage{mathrsfs}%
+\usepackage[title]{appendix}%
+\usepackage{xcolor}%
+\usepackage{textcomp}%
+\usepackage{manyfoot}%
+\usepackage{booktabs}%
+\usepackage{algorithm}%
+\usepackage{algorithmicx}%
+\usepackage{algpseudocode}%
+\usepackage{listings}%
+\usepackage{tikz}
+\usetikzlibrary{shapes.geometric, arrows.meta, positioning, calc}
+%%%%
+
+\raggedbottom
+%%\unnumbered% uncomment this for unnumbered level heads
+
+\begin{document}
+
+\title[AI Disaster Opinions and Action]{Breaking the Bubble? AI’s Role in Shaping Disaster Opinions and Driving Social Action}
+
+%%=============================================================%%
+%% GivenName	-> \fnm{Joergen W.}
+%% Particle	-> \spfx{van der} -> surname prefix
+%% FamilyName	-> \sur{Ploeg}
+%% Suffix	-> \sfx{IV}
+%% \author*[1,2]{\fnm{Joergen W.} \spfx{van der} \sur{Ploeg} 
+%%  \sfx{IV}}\email{iauthor@gmail.com}
+%%=============================================================%%
+
+\author*[1]{\fnm{Tina} \sur{Comes}}\email{t.comes@tudelft.nl}
+
+\affil*[1]{\orgdiv{Faculty Technology, Policy \& Management}, \orgname{TU Delft}, \orgaddress{ \city{Delft}, \country{The Netherlands}}}
+
+%%==================================%%
+%% Sample for unstructured abstract %%
+%%==================================%%
+
+\abstract{Crises, ranging from climate disasters to geopolitical conflicts, change human information collection, sharing, and decision-making due to their complexity, urgency and moral dilemmas. The combination of urgency, uncertainty, and high-stakes is known echo chambers and cognitive biases. Trustworthy Artificial Intelligence (AI) promises solutions to optimise decisions and reduce informational bottlenecks. Yet, introducing AI as a 'trusted' actor in crises fundamentally changes human interaction, information processing and decision-making. This paper uses an agent-based model (ABM) to explore how AI-driven information impact information processing, sharing and decision-making during crises, especially if that AI seeks to gain trust by tuning into human beliefs. To explore the effects for different prototypical behaviours, the human agents in the ABM adopt exploratory or exploitative behaviours, modelled through Q-learning algorithms, and they update their beliefs using Bayesian techniques. Our findings reveal nuanced interactions: while AI can initially improve situational awareness, it often inadvertently introduces or reinforces new echo chambers and interrupts social networks. Identifying tipping points where AI transitions from mitigating to amplifying filter bubbles provides critical insights to understand how to balance trust and accuracy, and what AI in crises can and cannot help optimise for.}
+
+\keywords{Disaster Response, AI for Good, Opinion Dynamics, Filter Bubble, Echo Chamber, Opinion-Action Dynamic, Hybrid Intelligence}
+
+%%\pacs[JEL Classification]{D8, H51}
+
+%%\pacs[MSC Classification]{35A01, 65L10, 65L12, 65L20, 65L70}
+
+\maketitle
+
+\section{Introduction}\label{sec1}
+Increasingly, we humans rely on artificial intelligence (AI) systems to collect and analyse information and make decisions \citep{klingbeil2024trust}. This trend is particularly pronounced during crises, where decision-makers are confronted with highly complex decisions that need to be addressed urgently, leaving limited time for reflection and deliberation \citep{mendonca2001decision}. This combination is known to deeply impact human information processing, sharing decision-making behaviour \citep{comes2020coordination}. To help humans manage this complexity, Artificial Intelligence (AI) is promoted as a tool to optimise decisions and information flows \citep{jeon2024hearhere}. The idea that AI will facilitate immediate access to 'objective' or neutral information, or facilitate interaction with diverse viewpoints is expected to improve situational awareness and prevent fragmentation. 
+
+A prerequisite to the use of technology in crises is trust \citep{steinbrink2024impact}. In the field of AI, there is a plethora of guidelines and approaches that speak to designing AI that is \textit{trustworthy}, especially in the context of crises and disasters -- for a recent review, see \citep{albahri2024systematic}. Often, the trust relationship is conceptualised as one individual trusting one AI, whereby it is claimed that trust is promoted by more transparency \citep{visave2025transparency}. Others focus on \textit{public} trust as a result of a design and decision-making process \citep{tzachor2020artificial}. Recognising that humans -- especially in crises -- have a tendency of selective exposure \citep{barbera2015tweeting}, and confirmation bias \citep{paulus2024interplay}, whereby they reject conflicting information. 
+
+Increasingly, especially generative AI (genAI) has started to mimick human behaviour and tune to the opinions of the human \citep{sharma2024generative}, as a way to gain acceptance and 'trust'. This introduces a fundamental trust dilemma: should AI provide accurate information—even if it contradicts beliefs and is potentially rejected—or should it align with human beliefs to foster immediate acceptance and trust? If AI overly tunes into existing beliefs to gain rapid trust, it risks amplifying cognitive biases and echo chambers \citep{ekstrom2022self}. Echo chambers are segregated information spaces, in which pre-existing beliefs are reinforced, and there is limited exposure to diverse or contradictory perspectives potentially leading to polarisation \citep{jeon2024hearhere}. The architecture of online informatiscapes, together with the increasing personalisation of AI to its user has the potential to contribute to the formation and maintenance of these echo chambers. Conversely, providing correct but contradictory information might lead to information rejection and distrust in AI, whereby social echo chambers and human biases cannot be overcome.
+
+While studies and insights on the implications of black box genAI models have started to emerge \citep{zhang2024see, sharma2024generative}, a gap in current research is understanding how these interactions of individuals with AI scale up to broader social network dynamics during crises, potentially creating or exacerbating polarisation and filter bubbles. This paper addresses a fundamental question: Does AI act as a bridge that breaks echo chambers by providing broader perspectives during crises, or does it instead reinforce existing filter bubbles through its alignment mechanisms?"
+
+To start exploring these dynamics, we employ an agent-based modelling (ABM) approach that allows us to simulate interactions between heterogeneous human agents and AI information sources during crisis scenarios. The model simulates decentralised disaster relief efforts where human agents, characterised by distinct behavioural types, interact with human or AI information sources to allocate emergency resources across a spatial environment. This computational approach enables us to observe emergent patterns of information flow, belief formation, and decision outcomes across different network configurations and behavioural strategies. We analyse the trade-off between the adoption and use of AI, and the resulting situational awareness, filter bubbles and decision performance. 
+
+The model expands on established opinion dynamics frameworks \citep{geschke2019triple} to incorporate the challenges of human-AI interaction. To understand the impact of different human behavioural patterns, we analyse two different prototypical human decision-making strategies under uncertainty as a way to manage the trade-off between broad information collection to reduce uncertainty (exploration) and reward seeking within limited local environments (exploitation) - the latter pattern being typical for the responsive short-term focus of crisis management \citep{comes2020coordination}. Information adoption by agents is modelled through Bayesian updating, enabling dynamic belief revision based on new evidence and AI recommendations.
+
+This approach allows us to analyse how different information sources, behavioural patterns and dynamic trust relationships influence collective decision-making in crisis response. The analysis identifies tipping points where the benefits of AI of being able to exploring broader areas transition into detrimental influence by creating new echo chambers. These insights contribute to the ongoing discussions about what constitutes \textit{trustworthy} AI, and how we strike a balance between optimising the adoption and use of the technology versus its impact, particularly in complex, highly dynamic and morally charged situations such as crises.
+
+\section{Background}
+
+Fuelled by climate change, increasing inequalities and fragmentation, conflict and war, we are confronted with global poly-crises that erode progress towards sustainability \citep{sogaard2024evolution}. As crises require rapid interventions that overwhelm human decision-making capacity, digital tools have been portrayed as a potential avenue to automatically collect and analyse data to support or make decisions \citep{qadir2016crisis}. Examples range from community mapping \citep{champlin2023measuring, soden2014crowdsourced}, the use of aerial images, drones and digital platforms for better crisis management \citep{voigt2007satellite} to increasing automation of the delivery of aid, facilitated by mobile phone and blockchain technology \citep{coughlan2015forecast, baharmand2019leveraging}. Yet the emergent nature of crises poses challenges for information collection, sharing, and decision-making \citep{turoff2004design, nespeca2020towards}.
+
+To better understand the use of AI and information technology more broadly in the context of crises, I refer to the information management cycle that distinguishes three mechanisms (i) information collection and verification, (ii) information sharing and dissemination and (iii) information use and decision-making \citep{van2015On}. Table \ref{tab:AIcrisis-overview} provides an overview of the promises and perils of AI for the different information management mechanisms, crucial human behavioural patterns and examples of the use of AI in this context. The following sections examine how AI changes these three mechanisms and underlying social and behavioural structures.
+
+\begin{table}
+    \small
+    \centering
+    \begin{tabular}{p{0.15\textwidth} | p{0.15\textwidth} p{0.17\textwidth}p{0.17\textwidth} p{0.17\textwidth}}
+        \hline
+        \textbf{Mechanism} & \textbf{Promise of AI} &\textbf{ Peril of AI} & \textbf{Human Behaviour} & \textbf{Example Application}\\ \hline
+        Information collection & Real-time large-scale information collection \citep{narmatha2025disaster} & Exclusion of marginalised or digitally invisible groups \citep{coleman2024weaving} & Sensemaking \citep{klein2010rapid} & Crowd sensing \citep{mai2025evaluating}, wild fire monitoring \citep{roy2024multi}\\ \hline
+        Information sharing & Facilitate access to diverse sources \citep{jeon2024hearhere} & Sharing confined to closed social networks & Trust and alignment, over-reliance \citep{manzini2024should} & Chatbots \citep{urbanelli2024ermes}\\ \hline
+        Decision support &  AI delivering tailored and verified information \citep{zhao2025tailoring}, recommendations, automated decisions & Promoting high alignment \citep{manzini2024should}; (moral) de-skilling \citep{vallor2015moral} & (Group) decisions \citep{comes2024ai}, cognitive biases \citep{paulus2022influence} & Agentic AI \citep{acharya2025agentic}, Early Warning \citep{reichstein2025early}\\ \hline
+    \end{tabular}
+    \caption{Overview of key mechanisms, promise and perils of AI in crisis management}
+    \label{tab:AIcrisis-overview}
+\end{table}
+
+
+\subsection{Information collection: knowing more or knowing better?}
+AI in combination with data collection via as satellite or aerial imagery promise a broader perspective, addressing both network density and information intensity that often lack in human social networks \citep{pan2012crisis}. The promise of real-time data collection, especially in highly dynamic situation is said to allow decision-makers rapidly, identifying critical tipping points before they occur. The focus in this arena has been on social media and real-time surveillance via mobile phone data to rapidly understand sentiment and human movement patterns \citep{middleton2013real, qadir2016crisis, mai2025evaluating}. Following the rapid progress in remote sensing, there are now also increasingly applications in natural hazard monitoring including floods \citep{zhou2024threshold} or wild fires \citep{roy2024multi}.
+
+However, this broad data collection introduces risks of excluding marginalised or digitally invisible populations \citep{coleman2024weaving}. AI-driven information collection typically reflects existing data infrastructures and connectivity patterns, potentially reinforcing structural biases in crisis response rather than overcoming them.
+
+These technological limitations interact with human sensemaking processes during crises \citep{klein2010rapid}. Sensemaking is a process, by which we humans "\textit{make meaning}", especially in conditions of uncertainty and ambiguity \citep{weick2005organizing}. Importantly, sensemaking is a \textit{social} and identity-forming process, in which shared meanings emerge from interaction \citep{maitlis2010sensemaking}. At the same time, the emergent nature of crises poses challenges for information collection \citep{turoff2004design}, where humans tend to  select information that confirms their initial sensemaking trajectories \citep{barbera2015tweeting} and focus primarily on their immediate vicinity and close groups \citep{comes2020coordination}.
+
+
+\subsection{Information Sharing: Trustworthy AI?}
+The second mechanism in Table \ref{tab:AIcrisis-overview} addresses how information is shared across social and organisational networks during crises. Crises are known to disrupt infrastructures, ranging from telecommunication to mobility networks, leading to fragmented social networks and response \citep{holguin2012unique}. AI promises to facilitate access to diverse information sources, possibly breaking social echochambers \citep{jeon2024hearhere}, potentially bridging fragmented information spaces and overcoming the echo chambers that naturally form during crises.
+
+In addition, crises disrupt infrastructures and social networks leading to fragmentation \citep{wolbers2018introducing}. Especially the combination of low information volume and density has been shown to lead to silos \citep{pan2012crisis} -- the well known echo chambers arise. As a consequence, crisis response efforts often focuses on local or regional impacts -- often driven by the experience of the immediate suffering --, yet neglecting the cascading effects across different geographical areas \citep{sigala2022mitigating}.
+
+Foundational theories in opinion dynamics, such as bounded confidence models \citep{hegselmann2002opinion}, state that individuals are more likely to interact with others whose opinions are within a certain range of their own. In contrast, social influence theories emphasise the role of social networks and the tendency for individuals to align their opinions with those of their peers \citep{friedkin1999social}. This alignment is often reinforced by homophily, ie, the tendency to associate with others who share similar including beliefs \citep{mcpherson2001birds}.
+
+Human information sharing in crises is guided by strong social networks and inter-human relationships. At the onset of a disaster \textit{swift trust,} based on roles, rules, and risk perception is crucial to efficient decision-making \citep{tatham2010application}. Even though the importance of swift trust is recognised, there is limited evidence on the role of technology. \citet{dubey2018big} have shown that 'big data' can support building swift trust among actors in humanitarian supply chain. However, it is not clear how the trust relationships that are vital for human-human interaction in crises are translated to interactions with machines, and how these social networks and relationships influence the formation, stability, and performance of teams where humans interact with AI at scale. A starting point are the trust-building mechanisms between individuals and AI. Importantly, even though users are aware that they are interacting with a machine, they experience the resulting relationship as a trust relationship \citep{manzini2024should}. The literature on trust and trustworthy AI stresses the need for transparency, reliability and alignment in high-stakes environments \citep{lee2004trust, glikson2020human}.
+
+Transparency has been shown said to foster or undermine public trust towards AI in crisis management \citep{steinbrink2024impact, visave2025transparency}. However, given the potential sensitivity of crises information, it is often unclear how much transparency can be provided and achieved \citep{steinbrink2024impact}. Others have highlighted the role of trust into the creator of an AI \citep{saffarizadeh2024relationship}, yet this is unlikely to be known in the rapidly establishing networks in crisis response. Therefore, reliability and alignment play a key role in crisis management. Reliability is defined as \textit{behaving in accordance with expectations}. Alignment refers to the alignment of values or interests, as represented or expected by the humans and their beliefs. Especially in the field of generative AI and AI assistants, it has been shown that users expect an AI to be aligned with their values and interests, and that this alignment can even lead to strong emotional ties \citep{manzini2024should, kaplan2023trust}. From there, tensions emerge between providing accurate recommendations or recommendations that potentially contradicts prior beliefs for higher trust and acceptance \citep{sharma2024generative, ekstrom2022self}.
+
+\subsection{Decision-Making: Rapid AI recommendations or human consensus?}
+A challenge in crises is how to translate uncertain and volatile information into action and coordinated decision-making. AI promises to deliver verified information \citep{zhao2025tailoring}, and rapidly analyse large amounts of data. As such, ideas of using AI to support or even automate decisions is becoming increasingly popular as a way to address the double challenge of complexity and urgency \citep{comes2024ai}. AI-driven decision support tools for anticipatory action and forecast-based financing are said to ensure rapid and reliable interventions \citep{thalheimer2022role}. Sure enough, during crises, humans are particularly prone to simplification strategies and heuristics that may be maladaptive in complex environments \citep{klein2010rapid}. These include confirmation bias, where decision-makers selectively attend to information that confirms pre-existing beliefs; anchoring effects, where initial impressions disproportionately influence subsequent judgments; and framing effects, where the way information is presented impacts decision-making \citep{paulus2022influence}.
+
+The need for group decision-making in crisis contexts introduces additional complexities. While groups benefit from diverse perspectives, crisis conditions often undermine these advantages. The pressure to reach consensus quickly can lead to groupthink and centralisation of authority \citep{driskell1991group}, which lead to a silencing of dissenting voices, especially if they are coming from marginalised or low-status groups. AI systems promise to mitigate these group-level biases by providing external, supposedly objective perspectives that can break entrenched patterns of group polarization \citep{jirovsky2021can}. However, the integration of AI recommendations into group processes creates new dynamics that remain poorly understood.
+
+
+These dynamics become even more pronounced in the hierarchical structures typical of crisis response organizations. Power differentials within teams influence whose perspectives are privileged and how contradictory information is processed \citep{comes2024ai}. When AI recommendations align with powerful stakeholders, they may be more readily accepted regardless of their accuracy, while valuable insights that challenge established authority may be dismissed. This process can lead to what \citet{vallor2015moral} describes as moral de-skilling, where teams or leaders gradually outsource ethical judgment to technological systems without adequate critical engagement.
+
+A critical tension emerges between optimisation for consensus (and trust) versus optimisation for decision quality. AI systems that primarily aim to facilitate agreement may inadvertently reinforce pre-existing group biases rather than challenging them. Conversely, AI systems that prioritize decision quality by presenting contradictory information risk rejection by the group if they disrupt established social dynamics or challenge dominant narratives \citep{manzini2024should}. In addition, the high alignment to values and preferences creates what \citet{west2025ai} terms the "\textit{alignment paradox}," whereby greater alignment of AI towards values can also lead to potentially greater misuse and distortion: "\textit{more virtuous AI may be more easily made vicious}" \citep{west2025ai}.
+
+An open question is thus how the perspective offered by AI is adopted, if it conflict with the actual or perceived urgent local need. In addition, AI can exacerbate selective exposure and confirmation biases by presenting users with content aligned with their prior interactions and the interests of their social networks. That means, via AI alignment, a self-reinforcing loop is introduced that increasingly insulates individuals within homogeneous informationscapes. The resulting echo chambers can solidify their beliefs, and lead to misallocation and biased decisions. 
+
+Especially the tendency to focus on the immediate consequences and neglecting complex or long-term feedback \citep{comes2020coordination} are characteristic for human crisis decisions. The combination of urgency and complexity are known to change decision behaviour \citep{klein2010rapid}, introducing selective exposure \citep{barbera2015tweeting} or cognitive and motivational biases \citep{paulus2024interplay}. 
+
+\subsection{Synthesis}
+In sum, AI has been portrayed as a 'solution' to address the flaws of human information collection, processing, sharing and decision-making in crises. However, the context of crises also brings about specific challenges to technology and trustworthy AI in the context of information collection, sharing, and decision-making that are only partially covered in the current guidelines and standards \citep{ozmen2023six}. Current AI tools for crisis response are largely myopic, focusing on addressing immediate problems for crisis response, without considering longer term impacts on social fabric, fairness, or environment and carbon footprint \citep{harika2024harnessing}. Further, several researchers have pointed to the fact that if we delegate responsibility for the safety and well-being of our societies to technological systems, there is a critical spiral of loss of human oversight and control \citep{comes2024ai}. Especially the many moral dilemmas that crisis decisions pertain to remain hard to capture and translate to an AI. Across these three mechanisms—information collection, sharing, and decision support—several critical research gaps emerge:
+
+\textbf{From individual to collective dynamics: }While the literature primarily addresses human-AI trust at the individual level, we need to understand of how these interactions scale to network-level dynamics, influencing collective processes such as sensemaking, and how they contribute to polarisation and fragmentation. This gap is particularly pronounced in crisis contexts, where rapidly forming and dissolving networks create unique informationscapes.
+
+\textbf{AI alignment paradox:} The relationship between AI alignment strategies and echo chamber formation remains poorly understood, particularly when AI systems attempt to gain human trust by reflecting existing beliefs. While high alignment may lead to greater information adoption or 'virtuous' AI, it may also -- via the alignment paradox \citep{west2025ai} -- lead to extreme opposites, thereby fostering polarisation and echo chambers it promised to break
+ 
+This paper contributes by using an innovative agent-based modelling approach that explicitly explores these gaps. By systematically analysing tipping points at which AI shifts from reducing to amplifying filter bubbles, it offers nuanced insights on optimizing AI integration into crisis management processes.
+Current research addressing the trajectory of human trust in robotic AI suggests that the 
+initial trust starts at a low level and develops over time \citep{glikson2020human}.
+
+% ============================================================
+%  Methods
+% ============================================================
+\section*{Methods}
+\label{sec:methods}
+
+\subsection*{Hypotheses and experimental logic}
+
+Our study is organised around two sets of hypotheses, summarised
+in Table~\ref{tab:hypotheses}.
+The first set (A1--A4) concerns the internal learning dynamics
+of the model: whether the dual-timeline feedback architecture
+produces the qualitatively different learning trajectories we
+expect for confirmation-seeking versus accuracy-seeking agents.
+These are in part validation hypotheses --- if the model's
+reinforcement learning mechanism is correctly specified, fast
+information-quality feedback should drive down an agent's
+valuation of a confirming AI, whereas delayed relief-outcome
+feedback should leave exploitative agents slower to update.
+The second set (B1--B4) contains the substantive claims about
+filter bubble formation: that confirming AI amplifies social
+echo chambers while truthful AI can break them, that the
+combination of high AI reliance and confirming behaviour produces
+the strongest homogenisation, and that cognitive type moderates
+these effects.
+These hypotheses jointly motivate the model design: the
+distinction between exploitative and exploratory agents is needed
+to test B4 and A3; the disconnected community structure with
+rumour-seeded priors is needed to provide a social filter bubble
+that AI can either amplify or dissolve; and the dual feedback
+loops are needed to test whether agents can \emph{learn} to
+detect a confirming AI at all.
+We describe the model components in the order dictated by this
+logic, before turning to the two experiments.
+
+\begin{table}[h]
+\centering
+\caption{Pre-registered hypotheses.}
+\label{tab:hypotheses}
+\renewcommand{\arraystretch}{1.25}
+\begin{tabular}{p{0.06\linewidth}p{0.38\linewidth}p{0.36\linewidth}p{0.09\linewidth}}
+\hline
+\textbf{ID} & \textbf{Prediction} & \textbf{Mechanism} & \textbf{Exp.} \\
+\hline
+A1 & Exploratory agents show \emph{decreasing} Q(AI) under $\alpha=0.9$
+   & Frequent fast-loop feedback reveals inaccuracy & A \\
+A2 & Exploratory agents show \emph{increasing} Q(AI) under $\alpha=0.1$
+   & Fast-loop feedback rewards accurate reports & A \\
+A3 & Exploitative agents change Q-values more slowly than exploratory agents
+   & Fewer fast-loop evaluations; dominated by slow loop & A \\
+A4 & Info-quality feedback precedes relief feedback by $\approx$12--22 ticks
+   & Fast loop: 3--15 ticks; slow loop: 15--25 ticks & A \\
+\hline
+B1 & Confirming AI amplifies social filter bubbles (SECI more negative vs.\ control)
+   & AI reinforces community priors, reducing belief diversity & B \\
+B2 & Truthful AI breaks social filter bubbles (SECI less negative vs.\ control)
+   & AI introduces accurate cross-community information & B \\
+B3 & High AECI $+$ confirming AI produces the strongest filter bubbles
+   & AI reliance $\times$ confirmation $=$ maximum echo chamber & B \\
+B4 & Exploratory agents show weaker filter bubble effects than exploitative agents
+   & Broader acceptance and higher sensing dilute bubble formation & B \\
+\hline
+\end{tabular}
+\end{table}
+
+\subsection*{Agent-based model}
+
+We developed an agent-based model (ABM) of information seeking and
+relief allocation during a disaster, implemented in Python using the
+Mesa framework \citep{Mesa2020}.
+ABM is suited to this problem because filter bubbles are emergent
+social phenomena: they arise from repeated local interactions among
+heterogeneous agents and unfold as dynamic processes rather than
+equilibria \citep{Epstein2006,Bonabeau2002}.
+The model integrates three components whose interplay is required to
+generate the conditions under which Hypotheses B1--B4 can be
+tested: a spatially structured disaster environment that evolves
+stochastically over time; a social network of cognitively
+heterogeneous human agents whose initial beliefs are shaped by
+community-specific rumours; and AI agents whose reporting behaviour
+is controlled by a single alignment parameter.
+A full formal description is given in Appendix~\ref{sec:model}; here
+we describe each component with the detail needed to interpret the
+results.
+
+The disaster environment consisted of a $30\times30$ grid on which
+each cell held a severity level $\ell\in\{0,\ldots,5\}$.
+Severity was initialised as a truncated Gaussian centred on a
+randomly drawn epicentre, covering approximately 15\% of the grid.
+To capture the evolving nature of real disasters, the grid was
+updated at each time step: with probability 0.10 a randomly
+selected cell received a severity increment of 2--3 points,
+ensuring that agent beliefs became outdated and that continuous
+information seeking remained adaptive rather than trivially solved.
+
+The $N=100$ human agents were assigned to one of two cognitive
+types with equal probability.
+\emph{Exploitative} agents are confirmation-seeking: they
+preferentially query sources near their currently believed disaster
+epicentre and hold a narrow latitude of acceptance governed by
+parameters $D=2.0$ and $\delta=3.5$, following the social judgment
+theory model of \citet{Geschke2019}.
+\emph{Exploratory} agents are accuracy-seeking: they target
+high-uncertainty regions and hold a wider acceptance window
+($D=4.0$, $\delta=1.2$).
+This distinction is essential for testing Hypothesis A3 --- that
+exploitative agents learn more slowly from fast feedback --- and
+Hypothesis B4 --- that exploratory agents are less susceptible to
+filter bubble formation.
+The probability that agent $i$ accepts an incoming report $\hat\ell$
+about a cell whose current believed severity is $\ell$ is:
+%
+\begin{equation}
+  P_\mathrm{acc}(d) =
+  \frac{D_\mathrm{eff}^{\,\delta}}{d^{\,\delta}+D_\mathrm{eff}^{\,\delta}},
+  \qquad d = |\hat\ell - \ell|,
+  \label{eq:accept}
+\end{equation}
+%
+where $D_\mathrm{eff}$ is widened by a factor up to $1.5\tau_{ij}$
+when the source $j$ belongs to the agent's friend set
+$\mathcal{F}_i$, and equals $D$ otherwise.
+Reports that pass this acceptance draw are integrated via
+precision-weighted Bayesian averaging.
+The agent's existing belief confidence $c$ is converted to a prior
+precision $\pi_\mathrm{prior}=\kappa c/(1-c)$, with $\kappa=1.5$
+for exploitative agents (stronger resistance to revision) and
+$\kappa=0.8$ for exploratory agents.
+Source precision $\pi_\mathrm{src}$ is a monotone function of trust
+$\tau_{ij}$, capped at 8 and attenuated when $\tau_{ij}<0.30$
+to prevent low-credibility sources from driving large updates.
+The posterior severity estimate and updated confidence are then:
+%
+\begin{equation}
+  \ell' = \frac{\pi_\mathrm{prior}\,\ell +
+                \pi_\mathrm{src}\,\hat\ell}
+               {\pi_\mathrm{prior}+\pi_\mathrm{src}},
+  \qquad
+  c' = \frac{\pi_\mathrm{prior}+\pi_\mathrm{src}}
+            {1+\pi_\mathrm{prior}+\pi_\mathrm{src}}.
+  \label{eq:bayes}
+\end{equation}
+%
+Together, Equations~(\ref{eq:accept}) and~(\ref{eq:bayes}) implement
+the \emph{triple-filter bubble} mechanism of \citet{Geschke2019}:
+incoming information is filtered first by cognitive openness ($D$,
+$\delta$), then by social proximity ($D_\mathrm{eff}$ for friends),
+and then by source credibility ($\pi_\mathrm{src}$ scaled by
+$\tau_{ij}$), with all three filters jointly restricting the flow
+of challenging information and providing the individual-level
+substrate for the community-level effects targeted in Hypotheses
+B1--B3.
+
+Agents were partitioned into $C\in\{2,3\}$ disjoint communities,
+within each of which every pair of agents was linked by a friendship
+tie with probability $p_\mathrm{in}=0.70$; no edges crossed
+community boundaries.
+This clustered, disconnected structure is the key structural
+precondition for a social filter bubble \citep{Geschke2019}:
+agents with shared community ties have systematically wider
+acceptance windows for each other's reports, making within-community
+information easy to accept and cross-cutting information unlikely
+to arrive.
+To give this social structure \emph{informational content} to
+reinforce, each community was independently seeded with a shared
+rumour at initialisation with probability 0.30.
+A rumour described a false disaster epicentre placed at least
+$0.70r$ from the true epicentre (where $r$ is the true disaster
+radius), with intensity $\rho=1.0$ and confidence
+$c_\mathrm{rum}=0.60$.
+Every agent in a rumour-seeded community was initialised with this
+false prior, creating divergent community narratives from the
+outset.
+Without this component, the social network structure alone would
+generate only weak belief homogeneity; the rumour mechanism ensures
+that there is a genuine pre-existing bubble for the AI to either
+amplify (H-B1) or break (H-B2).
+
+The $K=5$ AI agents each sampled 15\% of the grid per tick,
+maintaining a short-term memory of observed values.
+The key manipulation was the alignment parameter $\alpha\in[0,1]$,
+which controlled whether an AI's report confirmed the querying
+agent's prior or faithfully reflected ground truth:
+%
+\begin{equation}
+  \hat\ell_{xy} =
+  \operatorname{clip}\!\Bigl(
+    v_{xy} + a_{xy}\,(b_{xy}-v_{xy}),\;0,\;5
+  \Bigr),
+  \qquad
+  a_{xy} = \operatorname{clip}\!\bigl(
+    \alpha(1+2c_{xy}) + \alpha\lambda_\mathrm{lt}(1-\tau_{ij}),\;0,\;3
+  \bigr),
+  \label{eq:alignment}
+\end{equation}
+%
+where $v_{xy}$ is the AI's sensed value, $b_{xy}$ and $c_{xy}$
+are the caller's current belief and confidence, $\tau_{ij}$ is
+the caller's trust in the AI, and $\lambda_\mathrm{lt}$ is a
+low-trust amplification constant.
+At $\alpha=0$ the AI reports $v_{xy}$ (pure ground truth); at
+$\alpha=1$ the report is strongly pulled towards the caller's
+prior, amplified by high confidence and low trust.
+This operationalises the documented tendency of algorithmic systems
+to optimise for engagement by privileging content consistent with
+user expectations \citep{PariserFilter,Sunstein2017}.
+
+\subsection*{Reinforcement learning and dual-timeline feedback}
+
+Agents learned to allocate queries across the three source categories
+through Q-learning with $\varepsilon$-greedy exploration
+($\varepsilon=0.30$), and were trained via two feedback loops
+operating on distinct timescales.
+This dual-timeline architecture is directly motivated by Hypotheses
+A1--A4: it creates an asymmetry between agent types because
+exploratory agents, who query more cells and more diverse regions,
+receive far more frequent fast-loop evaluations and update trust
+at twice the rate of exploitative agents.
+Whether this asymmetry is sufficient to produce discriminably
+different learning trajectories — and whether agents can thereby
+\emph{detect} a confirming AI through accumulated experience — is
+the core empirical question of Experiment A.
+
+The \emph{fast loop} (3--15 ticks) provided information-quality
+feedback.
+After querying a source about a cell, the agent revisited that cell
+once local severity became observable, computed an accuracy reward
+$r_\mathrm{acc} = 1 - |\hat\ell - \ell^*|/5$, and updated both
+the Q-value of the queried source category and trust in the specific
+source:
+%
+\begin{equation}
+  Q(m) \leftarrow Q(m) + \bar\alpha\,c_\mathrm{src}\,
+  \bigl(r_\mathrm{acc} - Q(m)\bigr),
+  \qquad
+  \Delta\tau_{ij} =
+  \begin{cases}
+    +0.03 & r_\mathrm{acc} > 0.8,\\
+    -0.08 & r_\mathrm{acc} < 0.4,\\
+    0     & \text{otherwise.}
+  \end{cases}
+  \label{eq:fast_update}
+\end{equation}
+%
+The \emph{slow loop} (15--25 ticks) provided relief-outcome
+feedback.
+This reward updated the Q-value of the mode responsible for the
+relief decision and adjusted trust asymmetrically:
+%
+\begin{equation}
+  Q(m) \leftarrow Q(m) + \alpha(r_\mathrm{out} - Q(m)),
+  \qquad
+  \tau_{ij} \leftarrow \tau_{ij} +
+  \eta_\tau^{(\pm)}\bigl(r_\mathrm{out}-\tau_{ij}\bigr),
+  \label{eq:slow_update}
+\end{equation}
+%
+where $\eta_\tau^{(-)}=2.5\,\eta_\tau^{(+)}$, so that bad outcomes
+erode trust faster than good outcomes build it.
+
+The two loops interact with the social and cognitive architecture
+in a way that can generate the AI echo chamber targeted in
+Hypothesis B3.
+Trust $\tau_{ij}$ simultaneously governs the acceptance latitude
+$D_\mathrm{eff}$ (Eq.~\ref{eq:accept}), the source precision
+$\pi_\mathrm{src}$ (Eq.~\ref{eq:bayes}), and the strength of AI
+alignment adjustments (Eq.~\ref{eq:alignment}).
+When a confirming AI operates within a pre-existing social bubble,
+its reports are consistent with the agent's rumour-seeded prior
+and pass the acceptance filter easily, generating high fast-loop
+rewards and building trust.
+Higher trust then widens $D_\mathrm{eff}$, increases
+$\pi_\mathrm{src}$, and amplifies the alignment adjustment in
+future queries, progressively excluding disconfirming human sources.
+This reinforcing loop is precisely the mechanism behind H-B3 ---
+the expected interaction between AECI and alignment level --- and
+it is only testable because the model couples the Q-learning and
+belief-updating systems through the shared trust variable.
+
+\subsection*{Experiments and outcome measures}
+
+\emph{Experiment A} tested Hypotheses A1--A4 by comparing a
+truthful ($\alpha=0.1$) against a confirming ($\alpha=0.9$) AI
+over 150 ticks in a 50/50 agent-type mix.
+The primary outcomes were the temporal trajectories of Q-values
+for each source category, tracked at every tick for representative
+exploratory and exploitative agents, together with feedback event
+timelines recording the tick at which each fast- and slow-loop
+reward fired.
+
+\emph{Experiment B} tested Hypotheses B1--B4 using four alignment
+conditions including a no-AI control, run for 200 ticks to allow
+community dynamics to mature (Table~\ref{tab:expB}).
+To assess sensitivity to cognitive heterogeneity (motivated by H-B4),
+we additionally ran a polarisation sweep varying the spread between
+exploitative and exploratory acceptance windows via a scalar
+$g\in\{0.0,0.5,1.0,1.5\}$, crossed with
+$\alpha\in\{0.1,0.5,0.9\}$, yielding 12 additional conditions.
+
+Filter bubble formation was quantified through two complementary
+indices.
+The \emph{Social Echo Chamber Index} (SECI) measured whether an
+agent's friend group held more homogeneous beliefs than the
+population:
+%
+\begin{equation}
+  \mathrm{SECI}_i =
+  \begin{cases}
+    \max\!\bigl(-1,\;(\sigma^2_{\mathcal{F}_i}-\sigma^2)/\sigma^2\bigr)
+      & \sigma^2_{\mathcal{F}_i} < \sigma^2,\\[4pt]
+    \min\!\bigl(\phantom{-}1,\;(\sigma^2_{\mathcal{F}_i}-\sigma^2)/(5-\sigma^2)\bigr)
+      & \text{otherwise,}
+  \end{cases}
+  \label{eq:seci}
+\end{equation}
+%
+where $\sigma^2$ is the population-wide variance of belief levels
+and $\sigma^2_{\mathcal{F}_i}$ the variance within $i$'s friend group;
+negative values indicate echo chambers.
+The \emph{AI Echo Chamber Index} (AECI) applied the same
+normalisation to the belief variance of agents who had accepted at
+least three AI-sourced updates, capturing whether AI usage had
+driven belief homogenisation independently of social structure.
+Belief accuracy (mean absolute error between agents' belief maps
+and the ground-truth severity grid, MAE) served as a downstream
+measure of the practical costs of filter bubble formation.
+Each condition was replicated 10 times with independent random
+seeds.
+Condition differences in final-state values (last 20 ticks) were
+tested with two-sample $t$-tests (Bonferroni--Holm corrected);
+trajectory-level differences were estimated with linear
+mixed-effects models (condition $\times$ tick interaction, random
+intercept per replication), with effect sizes reported as Cohen's
+$d$ and $\eta^2$ respectively.
+Fixed and agent-type-specific parameters are summarised in
+Tables~\ref{tab:fixed_params} and~\ref{tab:agent_params}.
+
+% --- Parameter tables ---
+
+\begin{table}[h]
+\centering
+\caption{Fixed model parameters (all experiments).}
+\label{tab:fixed_params}
+\renewcommand{\arraystretch}{1.25}
+\begin{tabular}{llll}
+\hline
+\textbf{Group} & \textbf{Parameter} & \textbf{Value} & \textbf{Rationale} \\
+\hline
+\multirow{3}{*}{Environment}
+  & Grid ($W\times H$)                    & $30\times30$ & Sufficient resolution for spatial dynamics \\
+  & Share of disaster ($s$)               & 0.15         & 15\% of cells affected at initialisation \\
+  & Dynamics ($\nu$)                      & 2 (medium)   & 10\% shock probability; magnitude 2--3 \\
+\hline
+\multirow{3}{*}{Population}
+  & Human agents ($N$)                    & 100  & Large enough for community network effects \\
+  & AI agents ($K$)                       & 5    & One per 20 human agents \\
+  & AI sensing fraction                   & 0.15 & 15\% of cells sampled per tick \\
+\hline
+\multirow{3}{*}{Social network}
+  & Communities ($C$)                     & 2--3  & $\lfloor N/15\rfloor$; no cross-community edges \\
+  & Within-community edge prob.\          & 0.70  & Dense but not complete \\
+  & Rumour probability ($p_\mathrm{rum}$) & 0.30  & Per-component; separation $\ge0.70r$ \\
+\hline
+\multirow{3}{*}{Q-learning \& trust}
+  & Learning rate ($\alpha$)              & 0.15        & Tuned for convergence by tick $\approx100$ \\
+  & Exploration rate ($\varepsilon$)      & 0.30        & 30\% random source selection \\
+  & Initial trust (human / AI)           & 0.30 / 0.25 & Mild prior scepticism \\
+\hline
+\end{tabular}
+\end{table}
+
+\begin{table}[h]
+\centering
+\caption{Agent-type-specific parameters.
+Column headers refer to the equations in which each parameter appears.}
+\label{tab:agent_params}
+\renewcommand{\arraystretch}{1.25}
+\begin{tabular}{llll}
+\hline
+\textbf{Parameter} & \textbf{Exploitative} & \textbf{Exploratory} & \textbf{Equation} \\
+\hline
+Acceptance latitude ($D$)         & 2.0   & 4.0   & \ref{eq:accept} \\
+Sharpness ($\delta$)              & 3.5   & 1.2   & \ref{eq:accept} \\
+Prior precision scale ($\kappa$)  & 1.5   & 0.8   & \ref{eq:bayes}  \\
+Source precision scale ($\gamma$) & 2.0   & 1.5   & \ref{eq:bayes}  \\
+Trust learning rate ($\eta_\tau$) & 0.015 & 0.030 & \ref{eq:slow_update} \\
+Info Q-update rate ($\bar\alpha$) & 0.12  & 0.25  & \ref{eq:fast_update} \\
+\hline
+\end{tabular}
+\end{table}
+
+\begin{table}[h]
+\centering
+\caption{Experimental conditions — Experiment B. All conditions used
+$N=100$ agents (50/50 type mix), 10 replications, 200 ticks.}
+\label{tab:expB}
+\renewcommand{\arraystretch}{1.25}
+\begin{tabular}{lll}
+\hline
+\textbf{Condition} & \textbf{Alignment ($\alpha$)} & \textbf{Hypothesis addressed} \\
+\hline
+No AI         & ---  & Baseline; isolates social-structural bubble \\
+Truthful AI   & 0.1  & H-B2: bubble breaking \\
+Mixed AI      & 0.5  & Intermediate reference \\
+Confirming AI & 0.9  & H-B1, H-B3: amplification and AI--social interaction \\
+\hline
+\end{tabular}
+\end{table}
+
+
+%%############ Supplementary Materials ######################
+
+
+\section{Supplementary Materials: Model Description}
+
+\subsection{Environment}
+
+The simulation runs on a $W \times H$ grid (default $30 \times 30$).
+Disaster severity at each cell $(x,y)$ follows a discretised Gaussian
+centred on a randomly sampled epicentre $\mathbf{e}=(e_x,e_y)$:
+
+\begin{equation}
+  \ell_{xy} = \operatorname{clip}\!\left(
+    \operatorname{round}\!\left(
+      5\,\exp\!\left(-\frac{(x-e_x)^2+(y-e_y)^2}{2\sigma^2}\right)
+    \right),\; 0,\; 5
+  \right),
+  \label{eq:disaster}
+\end{equation}
+
+where $\sigma = r/3$ and $r = \sqrt{s\,WH/\pi}$ is the effective
+disaster radius determined by the share-of-disaster parameter $s$.
+The epicentre cell is pinned to severity $5$.
+
+\subsection{Agents}
+
+The population consists of $N$ human agents and $K$ AI agents.
+Human agents are partitioned into two cognitive types:
+
+\begin{description}
+  \item[Exploitative agents] ($n_\mathrm{ex}$ agents) are
+    confirmation-seeking: they query sources near their currently
+    believed epicentre and have a narrow acceptance window
+    ($D_\mathrm{ex}$, $\delta_\mathrm{ex}$; see below).
+  \item[Exploratory agents] ($n_\mathrm{er}$ agents) are
+    accuracy-seeking: they query high-uncertainty areas and have a
+    wide acceptance window ($D_\mathrm{er}$, $\delta_\mathrm{er}$).
+\end{description}
+
+Each agent $i$ maintains:
+(i) a belief map $\{(\ell_{xy}^{(i)}, c_{xy}^{(i)})\}$ of disaster
+level $\ell\in[0,5]$ and confidence $c\in(0,1)$ for every cell;
+(ii) a trust value $\tau_{ij}\in[0,1]$ towards every other agent $j$;
+(iii) a Q-table over three source categories
+$\{$\texttt{self\_action}, \texttt{human}, \texttt{ai}$\}$.
+
+\subsection{Information Acceptance}
+
+When agent $i$ receives a report $\hat\ell$ from source $j$ about
+cell $(x,y)$, the decision to accept is governed by the
+\emph{latitude-of-acceptance} mechanism \citep{Geschke2019}:
+
+\begin{equation}
+  P_\mathrm{accept}(d) =
+  \begin{cases}
+    1 & \text{if } d = 0,\\[4pt]
+    \dfrac{D_\mathrm{eff}^{\,\delta}}{d^{\,\delta} + D_\mathrm{eff}^{\,\delta}}
+    & \text{otherwise,}
+  \end{cases}
+  \label{eq:accept}
+\end{equation}
+
+where $d = |\hat\ell - \ell_{xy}^{(i)}|$ is the discrepancy between
+the report and the agent's prior belief, and
+
+\begin{equation}
+  D_\mathrm{eff} =
+  \begin{cases}
+    D\,\bigl(1 + 0.5\,\tau_{ij}\bigr) & \text{if } j \in \mathcal{F}_i,\\
+    D & \text{otherwise,}
+  \end{cases}
+\end{equation}
+
+with $\mathcal{F}_i$ the friend set of agent $i$.
+The parameter $D$ (latitude of acceptance) sets the discrepancy at
+which $P_\mathrm{accept}=0.5$; $\delta$ (sharpness) controls the
+steepness of the sigmoid.
+Default values are $D_\mathrm{ex}=2.0$, $\delta_\mathrm{ex}=3.5$
+for exploitative agents and $D_\mathrm{er}=4.0$,
+$\delta_\mathrm{er}=1.2$ for exploratory agents.
+
+\subsection{Belief Update}
+
+When a report is accepted, the agent performs a
+precision-weighted (Bayesian) update.
+Prior confidence $c$ is mapped to a prior precision:
+
+\begin{equation}
+  \pi_\mathrm{prior} = \kappa \cdot \frac{c}{1-c},
+  \qquad
+  \kappa =
+  \begin{cases}
+    1.5 & \text{exploitative,}\\
+    0.8 & \text{exploratory.}
+  \end{cases}
+\end{equation}
+
+Source precision is derived from the trust in the reporting agent:
+
+\begin{equation}
+  \pi_\mathrm{src} =
+  \min\!\left(8,\;
+    \gamma \cdot \frac{\tau_{ij}}{1-\tau_{ij}}\cdot w(\tau_{ij})
+  \right),
+  \qquad
+  \gamma =
+  \begin{cases}
+    2.0 & \text{exploitative,}\\
+    1.5 & \text{exploratory,}
+  \end{cases}
+\end{equation}
+
+where $w(\tau_{ij})=(\tau_{ij}/0.3)^{0.5}$ for $\tau_{ij}<0.3$ and
+$w(\tau_{ij})=1$ otherwise (low-trust dampening).
+The posterior is then:
+
+\begin{equation}
+  \ell' = \frac{\pi_\mathrm{prior}\,\ell + \pi_\mathrm{src}\,\hat\ell}
+               {\pi_\mathrm{prior}+\pi_\mathrm{src}},
+  \qquad
+  c' = \frac{\pi_\mathrm{prior}+\pi_\mathrm{src}}
+            {1+\pi_\mathrm{prior}+\pi_\mathrm{src}},
+\end{equation}
+
+both clipped to their valid ranges ($\ell'\in[0,5]$,
+$c'\in[0.1,0.98]$).
+
+\subsection{Trust Dynamics}
+
+Trust evolves through two mechanisms.
+
+\paragraph{Outcome-based update (slow feedback).}
+After sending relief to a targeted cell, the agent receives an
+outcome reward $r\in[0,1]$ after a logistics delay of
+$15$--$25$ ticks.  Trust in the responsible source $j$ is updated
+asymmetrically:
+
+\begin{equation}
+  \tau_{ij} \leftarrow \tau_{ij} +
+  \eta_\tau^{(\pm)}\,\bigl(r - \tau_{ij}\bigr),
+  \qquad
+  \eta_\tau^{(+)} = \eta_\tau,\quad
+  \eta_\tau^{(-)} = 2.5\,\eta_\tau,
+\end{equation}
+
+where $\eta_\tau^{(-)}$ applies when $r < \tau_{ij}$ (bad
+outcome penalised faster).
+
+\paragraph{Accuracy-based update (fast feedback).}
+Within 3--15 ticks of accepting a report, the ground-truth severity
+becomes locally observable and triggers a direct trust correction:
+
+\begin{equation}
+  \Delta\tau_{ij} =
+  \begin{cases}
+   +0.03 & \text{if accuracy} > 0.8,\\
+   -0.08 & \text{if accuracy} < 0.4,\\
+    0    & \text{otherwise,}
+  \end{cases}
+  \quad
+  \text{accuracy} = 1 - \tfrac{|\ell'- \ell_{xy}|}{5}.
+\end{equation}
+
+\subsection{Source Selection and Q-Learning}
+
+At each tick, agent $i$ selects a query mode
+$m\in\{\texttt{self\_action},\texttt{human},\texttt{ai}\}$
+using $\varepsilon$-greedy policy over the Q-table:
+
+\begin{equation}
+  m^* = \operatorname*{arg\,max}_{m}\, Q_i(m)
+  \quad\text{with probability }1-\varepsilon,
+\end{equation}
+
+and uniformly at random with probability $\varepsilon$.
+Q-values are updated via standard temporal-difference learning
+on the accuracy reward $r_\mathrm{acc}\in[0,1]$:
+
+\begin{equation}
+  Q_i(m) \leftarrow Q_i(m) + \alpha_m \, \bigl(r_\mathrm{acc} - Q_i(m)\bigr),
+\end{equation}
+
+where $\alpha_m = \bar\alpha \cdot c_\mathrm{src}$ is scaled by the
+confidence in the source's local knowledge $c_\mathrm{src}$, and
+$\bar\alpha=0.25$ for exploratory agents, $0.12$ for exploitative.
+Relief-outcome Q-updates use the agent's global learning rate
+$\alpha$ (default $0.15$).
+
+\subsection{Echo Chamber Metrics}
+
+\paragraph{Social Echo Chamber Index (SECI).}
+For each agent $i$, let $\sigma^2_{\mathcal{F}_i}$ be the variance
+of belief levels held by $i$'s friends and $\sigma^2$ the
+population-wide belief variance.  The agent-level SECI is:
+
+\begin{equation}
+  \mathrm{SECI}_i =
+  \begin{cases}
+    \max\!\left(-1,\;
+      \dfrac{\sigma^2_{\mathcal{F}_i} - \sigma^2}{\sigma^2}
+    \right)
+    & \text{if } \sigma^2_{\mathcal{F}_i} < \sigma^2,
+    \\[8pt]
+    \min\!\left(1,\;
+      \dfrac{\sigma^2_{\mathcal{F}_i} - \sigma^2}{5 - \sigma^2}
+    \right)
+    & \text{otherwise.}
+  \end{cases}
+  \label{eq:seci}
+\end{equation}
+
+Negative values indicate that friend groups hold more homogeneous
+beliefs than the population (echo chamber); positive values indicate
+diversification.  Reported metrics are the within-type means
+$\overline{\mathrm{SECI}}_\mathrm{ex}$ and
+$\overline{\mathrm{SECI}}_\mathrm{er}$.
+
+\paragraph{AI Echo Chamber Index (AECI).}
+Let $\mathcal{A}$ be the set of agents that have accepted at least
+three AI-sourced belief updates (\emph{AI-reliant} agents).
+Let $\sigma^2_{\mathcal{A}}$ be their belief variance.
+The AECI applies the same signed normalisation as
+Eq.~\eqref{eq:seci} with $\sigma^2_{\mathcal{A}}$ in place of
+$\sigma^2_{\mathcal{F}_i}$:
+
+\begin{equation}
+  \mathrm{AECI} =
+  \begin{cases}
+    \max\!\left(-1,\;
+      \dfrac{\sigma^2_{\mathcal{A}} - \sigma^2}{\sigma^2}
+    \right)
+    & \text{if } \sigma^2_{\mathcal{A}} < \sigma^2,\\[8pt]
+    \min\!\left(1,\;
+      \dfrac{\sigma^2_{\mathcal{A}} - \sigma^2}{5 - \sigma^2}
+    \right)
+    & \text{otherwise.}
+  \end{cases}
+\end{equation}
+
+\paragraph{Total bubble score.}
+The composite metric used in the alignment sweep is
+$B = |\overline{\mathrm{SECI}}| + |\mathrm{AECI}|$, where
+$\overline{\mathrm{SECI}}$ is the average across both agent types.
+The \emph{Goldilocks} alignment level $\alpha^*$ minimises $B$
+over the sweep $\alpha\in\{0.0,0.2,0.4,0.6,0.8,1.0\}$.
+
+\subsection{Cognitive Polarisation Sweep}
+
+To study the effect of between-type heterogeneity, we parameterise
+acceptance thresholds by a scalar $g\ge 0$:
+
+\begin{align}
+  D_\mathrm{ex}   &= \bar D - g\,\Delta D, &
+  \delta_\mathrm{ex} &= \bar\delta + g\,\Delta\delta,\\
+  D_\mathrm{er}   &= \bar D + g\,\Delta D, &
+  \delta_\mathrm{er} &= \bar\delta - g\,\Delta\delta,
+\end{align}
+
+with midpoints $\bar D = 3.0$, $\bar\delta = 2.35$ and half-widths
+$\Delta D = 1.0$, $\Delta\delta = 1.15$.
+At $g=0$ both types share identical acceptance windows; at $g=1$
+we recover the baseline calibration; at $g=1.5$ exploitative agents
+are strongly confirmation-biased.  The sweep uses
+$g\in\{0.0, 0.5, 1.0, 1.5\}$.
+
+\bibliography{References}% common bib file
+%% if required, the content of .bbl file can be included here once bbl is generated
+%%\input sn-article.bbl
+
+\end{document}
