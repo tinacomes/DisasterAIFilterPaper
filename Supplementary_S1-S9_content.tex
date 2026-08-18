@@ -82,7 +82,7 @@ The acceptance probability for report $r$ given prior belief $b$ is
 %
 where $D_{\mathrm{eff}} = D\cdot(1+0.5\,T_{\mathrm{source}})$ for social
 contacts and $D_{\mathrm{eff}}=D$ for the AI.
-This generalises the bounded-confidence model of \citet{Deffuant2000} by
+This generalises the classical bounded-confidence model \citep{deffuant2000mixing} by
 replacing the binary threshold with a smooth curve parameterised by $(D,\delta)$.
 
 % ============================================================
@@ -369,18 +369,7 @@ bridged network, network-gated queries), matching the primary analysis
 Goldilocks finding is robust to the absolute level of cognitive openness,
 independently of the inter-type gap $g$.
 
-\setcounter{figure}{5}
-\begin{figure}[h]
-\centering
-\includegraphics[width=\textwidth]{gap_sweep.png}
-\caption{Cognitive polarisation sweep: optimal alignment and its cost across
-the gap scalar $g$ and the acceptance midpoint $d_{\mathrm{mid}}$
-($4 \times 3 \times 11$ conditions, $N = 20$ replications each). Top left:
-$\alpha^{*}$ under the bubble-only (solid) and bubble+MAE (dashed) criteria.
-Top right: raw bubble composite at $\alpha^{*}$. Bottom: SECI and belief MAE
-at $\alpha^{*}$.}
-\label{fig:S6}
-\end{figure}
+% The gap-sweep figure appears in the main text (Fig. 7).
 
 \begin{table}[h]
 \centering
@@ -411,7 +400,7 @@ $g$ & $d_{\mathrm{mid}}$ & $\alpha^{*}$(bubble) & $\alpha^{*}$(+MAE) & SECI at $
 \end{tabular}
 \end{table}
 
-Three regularities emerge (Fig.~\ref{fig:S6}, Table~\ref{tab:S7b}). First,
+Three regularities emerge (main-text Fig.~7, Table~\ref{tab:S7b}). First,
 cognitive heterogeneity -- or uniform closed-mindedness -- is a precondition
 for the interior optimum: in cognitively homogeneous populations ($g = 0$)
 with baseline or open acceptance ($d_{\mathrm{mid}} \geq 3.0$), the optimal
@@ -468,6 +457,7 @@ Disaster dynamics mode controls the rate at which cell severities drift and
 receive shocks: mode~0 fixes the initial map; mode~2 applies the baseline shock
 schedule (Table~\ref{tab:S1}); mode~3 doubles shock frequency.
 
+\setcounter{figure}{4}
 \begin{figure}[h]
 \centering
 \includegraphics[width=\textwidth]{factor_comparison.png}
@@ -529,3 +519,25 @@ SciPy      & $\geq$1.10 \\
 The full codebase is available at the repository listed on the title page.
 Raw JSON result files for the main sweep ($N=20$) require approximately 150~MB
 of disk space and are archived separately.
+
+% ============================================================
+\subsection*{S10\quad AI in crisis information management: promises and perils}
+
+Table~\ref{tab:S10} summarises the promises and perils of AI across the three
+mechanisms of the crisis information management cycle -- collection, sharing,
+and use for decision-making -- together with the human behavioural patterns
+they interact with and example applications (moved from the main text).
+
+\begin{table}[h]
+\caption{Overview of key mechanisms, promises and perils of AI in crisis management and decision-making.}\label{tab:S10}
+\small
+\begin{tabular}{@{}p{2.0cm}p{2.4cm}p{2.4cm}p{2.4cm}p{2.4cm}@{}}
+\toprule
+Mechanism & Promise of AI & Peril of AI & Human behaviour & Example application \\
+\midrule
+Information collection & Real-time large-scale information collection \citep{narmatha2025disaster} & Exclusion of marginalised or digitally invisible groups \citep{coleman2024weaving} & Sensemaking \citep{klein2010rapid} & Crowd sensing \citep{mai2025evaluating}, wildfire monitoring \citep{roy2024multi} \\
+Information sharing & Facilitate access to diverse sources \citep{jeon2024hearhere} & Sharing confined to closed social networks & Trust and alignment, over-reliance \citep{manzini2024should} & Chatbots \citep{urbanelli2024ermes} \\
+Decision support & AI delivering tailored and verified information \citep{zhao2025tailoring}, recommendations, automated decisions & Promoting high alignment \citep{manzini2024should}; (moral) de-skilling \citep{vallor2015moral} & (Group) decisions \citep{comes2024ai}, cognitive biases \citep{paulus2022influence} & Agentic AI \citep{acharya2025agentic}, early warning \citep{reichstein2025early} \\
+\bottomrule
+\end{tabular}
+\end{table}
