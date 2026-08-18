@@ -362,20 +362,89 @@ Simulation length $T$        & 200 ticks                                       &
 \end{tabular}
 \end{table}
 
-Each replication uses an independent random seed (seed\,=\,run index).
-The $d_{\mathrm{mid}}$ axis tests whether the Goldilocks finding is robust to
-the absolute level of cognitive openness, independently of the inter-type gap $g$.
-Results confirm $\alpha^*=0.8$ across all 132 $(g,d_{\mathrm{mid}})$ conditions;
-the full $N=20$ design is treated as confirmatory.
-Both $\alpha^*(\text{bubble})$ and $\alpha^*(+\mathrm{MAE})$ are shown in the
-figure (solid and dashed lines respectively).
+Each replication uses an independent random seed (seed\,=\,run index); all
+cells run under the main-model configuration (mobility, spatially embedded
+bridged network, network-gated queries), matching the primary analysis
+(workflow run 32113082707). The $d_{\mathrm{mid}}$ axis tests whether the
+Goldilocks finding is robust to the absolute level of cognitive openness,
+independently of the inter-type gap $g$.
+
+\setcounter{figure}{5}
+\begin{figure}[h]
+\centering
+\includegraphics[width=\textwidth]{gap_sweep.png}
+\caption{Cognitive polarisation sweep: optimal alignment and its cost across
+the gap scalar $g$ and the acceptance midpoint $d_{\mathrm{mid}}$
+($4 \times 3 \times 11$ conditions, $N = 20$ replications each). Top left:
+$\alpha^{*}$ under the bubble-only (solid) and bubble+MAE (dashed) criteria.
+Top right: raw bubble composite at $\alpha^{*}$. Bottom: SECI and belief MAE
+at $\alpha^{*}$.}
+\label{fig:S6}
+\end{figure}
+
+\begin{table}[h]
+\centering
+\caption{Optimal alignment and outcomes at the optimum per
+$(g, d_{\mathrm{mid}})$ cell (steady state, last 75 ticks; $\alpha^{*}$ by the
+same range-normalised composites as the primary sweep). The baseline cell
+($g = 1.0$, $d_{\mathrm{mid}} = 3.0$) independently reproduces the primary
+sweep's bubble optimum.}
+\label{tab:S7b}
+\small
+\begin{tabular}{llcccc}
+\toprule
+$g$ & $d_{\mathrm{mid}}$ & $\alpha^{*}$(bubble) & $\alpha^{*}$(+MAE) & SECI at $\alpha^{*}$ & MAE at $\alpha^{*}$ \\
+\midrule
+0.0 & 2.0 (closed)   & 0.7 & 0.7 & $-0.20$ & 1.42 \\
+0.0 & 3.0 (baseline) & 0.0 & 0.0 & $-0.14$ & 1.17 \\
+0.0 & 4.0 (open)     & 0.0 & 0.0 & $-0.14$ & 1.12 \\
+0.5 & 2.0 & 0.8 & 0.6 & $-0.22$ & 1.61 \\
+0.5 & 3.0 & 0.7 & 0.3 & $-0.22$ & 1.40 \\
+0.5 & 4.0 & 0.3 & 0.3 & $-0.16$ & 1.15 \\
+1.0 & 2.0 & 0.8 & 0.7 & $-0.21$ & 1.63 \\
+1.0 & 3.0 & 0.8 & 0.4 & $-0.24$ & 1.59 \\
+1.0 & 4.0 & 0.4 & 0.4 & $-0.17$ & 1.19 \\
+1.5 & 2.0 & 0.8 & 0.2 & $-0.20$ & 1.63 \\
+1.5 & 3.0 & 0.8 & 0.7 & $-0.23$ & 1.61 \\
+1.5 & 4.0 & 0.4 & 0.4 & $-0.18$ & 1.23 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Three regularities emerge (Fig.~\ref{fig:S6}, Table~\ref{tab:S7b}). First,
+cognitive heterogeneity -- or uniform closed-mindedness -- is a precondition
+for the interior optimum: in cognitively homogeneous populations ($g = 0$)
+with baseline or open acceptance ($d_{\mathrm{mid}} \geq 3.0$), the optimal
+alignment is $\alpha^{*} = 0$, i.e., a fully truthful AI; the interior optimum
+emerges once confirmation-seeking agents are present ($g \geq 0.5$), or when
+the entire population is closed ($d_{\mathrm{mid}} = 2.0$, where
+$\alpha^{*} = 0.7$ even at $g = 0$). Second, $\alpha^{*}$(bubble) increases
+with both the inter-type gap and closedness, saturating at 0.8 for closed or
+strongly polarised populations, while open populations
+($d_{\mathrm{mid}} = 4.0$) keep $\alpha^{*}$ at 0.3--0.4 at every gap level;
+operational optima lie at or below the bubble optima in every cell, consistent
+with the structural account in the main text. Third, the cost paid \emph{at
+the optimum} rises along both axes: belief error at $\alpha^{*}$ grows from
+1.12 (open, homogeneous) to 1.63 (closed, polarised) and the social echo
+chamber deepens from $-0.14$ to $-0.24$ -- populations that require more
+confirmation to accept information are worse off even under their own optimal
+policy. The baseline cell reproduces the primary sweep's bubble optimum
+($\alpha^{*} = 0.8$) and places the operational optimum at 0.4, inside the
+primary analysis's 0.3--0.5 range -- an independent consistency check from a
+separate 2{,}640-run batch.
 
 % ============================================================
 \subsection*{S8\quad Factor Sensitivity Sweeps}
 
-Three one-at-a-time factor sweeps test the robustness of the Goldilocks finding.
-All use $\alpha=0.5$ and $N=2$ replications with run length
-$\max(50,T/2)=125$ ticks.
+Three one-at-a-time factor sweeps test the robustness of the findings to the
+information environment and population composition. All use $\alpha = 0.5$ and
+$N = 20$ replications with run length $T/2 = 100$ ticks, under the main-model
+configuration (workflow run 32113892791). Because the factor runs cover 100
+ticks, they characterise the \emph{formation phase} of the response rather
+than the steady state of the primary sweep. Note that the base parameterisation
+holds rumour probability at 1.0, so the disaster-dynamics and
+exploitative-share conditions are evaluated in the harshest rumour
+environment.
 
 \begin{table}[h]
 \centering
@@ -398,6 +467,34 @@ Rumour probability & $\{0.0,\,0.5,\,1.0\}$
 Disaster dynamics mode controls the rate at which cell severities drift and
 receive shocks: mode~0 fixes the initial map; mode~2 applies the baseline shock
 schedule (Table~\ref{tab:S1}); mode~3 doubles shock frequency.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\textwidth]{factor_comparison.png}
+\caption{Factor effects at $\alpha = 0.5$ (mean $\pm$ s.d.\ across $N = 20$
+replications, 100 ticks, main-model configuration). Columns: rumour
+probability, disaster tempo, exploitative share. Rows: SECI (tick-averaged),
+belief MAE (tick-averaged), and cumulative unmet high-need events.}
+\label{fig:S7fig}
+\end{figure}
+
+The formation phase is dominated by the rumour environment
+(Fig.~\ref{fig:S7fig}). Removing rumours entirely (probability 0: no community
+starts from a shared false narrative) reduces cumulative unmet high-need
+events over the first 100 ticks from 888 to 265 and lifts early targeting
+precision from 0.23 to 0.79, while tick-averaged belief error falls from 1.77
+to 1.66. The social-chamber response differs by agent type: under universal
+rumours, exploitative communities' insularity nearly vanishes ($-0.25$ to
+$-0.05$, as the conflict between rumour and observation raises
+within-community belief variance) while exploratory communities deepen
+($-0.15$ to $-0.28$). Disaster tempo leaves all outcomes essentially unchanged
+(cumulative unmet events 829--882 from a static to a rapidly changing hazard),
+indicating that the mid-range findings are not an artefact of hazard dynamics.
+Raising the exploitative share from 0.2 to 0.8 deepens the population-average
+social chamber ($-0.08$ to $-0.24$) and increases cumulative unmet events by
+roughly 30\% (815 to 1050). Together with S7, this locates the population-side
+driver of harm in confirmation-seeking composition and shared false
+narratives, not in the hazard itself.
 
 % ============================================================
 \subsection*{S9\quad Software and Reproducibility}
